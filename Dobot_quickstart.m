@@ -32,7 +32,8 @@ fprintf('Connecting to ROS master at %s ...\n', rosIP);
 rosinit(rosIP); % Connect to the Dobot ROS master
 
 % Quick sanity check: list nodes (optional visual check in Command Window)
-disp('ROS nodes on network:'); rosnode('list');
+disp('ROS nodes on network:'); 
+rosnode('list');
 
 %% --- 1) Safety status interface ---
 % Create publisher to command target safety status, and a subscriber to read current status.
