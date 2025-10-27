@@ -30,7 +30,6 @@ function [blockPosition, blockOrientation, blockColour] = IdentifyBlock(rosbagFi
     rgb_img = select(bag,'Topic', '/camera/color/image_raw/compressed');
     rgb_img = readMessages(rgb_img, 5);    
     rgb_img = readImage(rgb_img{1});
-    rgb_img = imrotate(rgb_img, -90);
 
     greyscale_img = rgb2gray(rgb_img);
 
