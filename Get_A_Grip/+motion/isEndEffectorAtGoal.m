@@ -9,7 +9,7 @@
 %   goalOrientation - A 3x1 vector representing the target (roll, pitch, yaw) orientation of the end-effector in radians.       
 % =========================================================================
 
-boolean = isEndEffectorAtGoal(goalPosition, goalOrientation)
+function atGoal = isEndEffectorAtGoal(goalPosition, goalOrientation)
 
     disp('=======================================');
     disp('Checking if end-effector is at goal...');
@@ -53,11 +53,11 @@ boolean = isEndEffectorAtGoal(goalPosition, goalOrientation)
     if positionError <= positionTolerance && orientationError <= orientationTolerance
         disp('End-effector is at the goal position and orientation.');
         disp('=======================================');
-        bool = true;
+        atGoal = true;
     else
         disp('End-effector is NOT at the goal position and orientation.');
         disp('=======================================');
-        bool = false;
+        atGoal = false;
     end
 
 end
