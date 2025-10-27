@@ -40,7 +40,7 @@ rosrun dobot_perception dobot_perception_node _image_topic:=/camera/color/image_
 1. **Intrinsic calibration** – Launch the RealSense camera driver and run the ROS `camera_calibration` tool from the `image_pipeline` package:
    ```bash
    rosrun camera_calibration cameracalibrator.py --size 7x9 --square 0.024 \
-     image:=/camera/color/image_raw camera:=/camera/color
+     image:=/camera/color/image_raw camera:=/camera/colour/image_raw
    ```
    Replace `--size` and `--square` with the checkerboard dimensions in corners and meters, respectively. Save the generated YAML and load it later as a ROS parameter.
 
