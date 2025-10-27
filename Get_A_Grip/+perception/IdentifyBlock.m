@@ -19,6 +19,7 @@
 
 function [blockPosition, blockOrientation, blockColour] = IdentifyBlock(rosbagFile, cameraParams)
 
+    % idk if bag or image is better? it might be image to be honest but idk rosbag from ros seems like its supposed ot happen :major bag alert 
     bag = rosbag(rosbagFile);
 
     % read first depth image message
