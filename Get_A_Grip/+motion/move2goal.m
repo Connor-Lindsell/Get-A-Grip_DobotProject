@@ -34,12 +34,13 @@ function move2goal(goalPosition, goalOrientation)
     targetEndEffectorMsg.Orientation.Z = qua(4);
     send (targetEndEffectorPub , targetEndEffectorMsg );
     
-    pause(2); % wait for motion to complete
+    pause(2.5); % wait for motion to complete
 
-    % Confirm reaching goal, if goal end effector pose is close enough to goal pose
-    while(!isEndEffectorAtGoal(goalPosition, goalOrientation))
-        pause(0.5);
-    end
+    % Commented out while testing
+    % % Confirm reaching goal, if goal end effector pose is close enough to goal pose
+    % while(!isEndEffectorAtGoal(goalPosition, goalOrientation))
+    %     pause(0.5);
+    % end
 
     disp('Reached goal position.');
     disp('=======================================');

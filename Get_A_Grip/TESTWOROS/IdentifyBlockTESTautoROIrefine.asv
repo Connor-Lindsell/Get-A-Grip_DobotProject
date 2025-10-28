@@ -1,0 +1,152 @@
+function IdentifyBlockTESTautoROIrefine
+    disp('=======================================');
+    disp('Identifying tag and extracting its four outer corners...');
+
+    I    = imread('frame0001.jpg');
+    gray = rgb2gray(I);
+
+    % === STEP 1. Auto-ROI from high-contrast edges, prefer square-ish blobs ===
+    edges = edge(gray,'Canny',[0.05 0.2]);
+    bw    = imdilate(edges, strel('disk',2));
+    bw    = imclearborder(bw);
+
+    stats = regionprops(bw, ...
+        'BoundingBox','Area','MajorAxisLength','MinorAxisLength','Solidity');
+
+    roi = [1 1 size(gray,2) size(gray,1)]; % fallback
+    if ~isempty(stats)
+        imgArea = numel(gray);
+        % keep mid sized and roughly square
+        valid = [stats.Area] > 300 & [stats.Area] < 0.25*imgArea;
+        stats = stats(valid);
+        if ~isempty(stats)
+            ar    = [stats.MajorAxisLength] ./ max([stats.MinorAxisLength],1);
+            sq    = 1 ./ (1 + abs(ar - 1));                         % 1 is perfect square
+            fill  = [stats.Solidity];                                % compactness
+            % edge density inside bbox
+            edens = zeros(1,numel(stats));
+            for k = 1:numel(stats)
+                bb = round(stats(k).BoundingBox);
+                bb(1:2) = max(bb(1:2),1);
+                bb(3)   = max(1,min(size(gray,2)-bb(1),bb(3)));
+                bb(4)   = max(1,min(size(gray,1)-bb(2),bb(4)));
+                patchE  = imcrop(edges, bb);
+                edens(k)= nnz(patchE) / numel(patchE);
+            end
+            score = sq .* fill .* (0.5 + edens);                    % no size bias
+            [~,idx] = max(score);
+            roi = round(stats(idx).BoundingBox);
+        end
+    end
+
+    % === STEP 2. Find 4 outer corners via Hough lines and intersections ===
+    patch  = imcrop(gray, roi);
+    E      = edge(patch,'Canny',[0.05 0.2]);
+    [H,theta,rho] = hough(E);
+    P      = houghpeaks(H, 8, 'Threshold', 0.3*max(H(:)));
+    L      = houghlines(E, theta, rho, P, 'FillGap', 8, 'MinLength', 25);
+    if isempty(L)
+        warning('No lines found in ROI. Showing ROI only.');
+        showResult(gray, roi, [], []);
+        return;
+    end
+
+    % keep longest lines, then split into two orientation groups
+    [~,ord] = sort(arrayfun(@(l) norm(l.point1-l.point2), L),'descend');
+    L = L(ord(1:min(8,numel(ord))));     % up to 8 good lines
+
+    ang = mod([L.theta],180);            % 0..180 deg
+    idx = kmeans([cosd(ang(:)) sind(ang(:))], 2, 'Replicates', 3);
+
+    L1 = L(idx==1);
+    L2 = L(idx==2);
+
+    % take the best two per group if available
+    L1 = takeLongest(L1,2);
+    L2 = takeLongest(L2,2);
+
+    % all pairwise intersections between groups
+    corners = [];
+    for a = 1:numel(L1)
+        for b = 1:numel(L2)
+            p = lineIntersect(L1(a), L2(b));
+            corners = [corners; p]; %#ok<AGROW>
+        end
+    end
+
+    % shift to full image coords and keep in-ROI points
+    corners(:,1) = corners(:,1) + roi(1);
+    corners(:,2) = corners(:,2) + roi(2);
+    inside = corners(:,1) >= roi(1) & corners(:,1) <= roi(1)+roi(3) & ...
+             corners(:,2) >= roi(2) & corners(:,2) <= roi(2)+roi(4);
+    corners = corners(inside,:);
+
+    % pick the best 4 and order clockwise
+    if size(corners,1) >= 4
+        corners = corners(1:4,:);            % simple pick, works well with clean tag
+        corners = orderCornersCW(corners);
+    else
+        warning('Found only %d corner candidates.', size(corners,1));
+    end
+
+    % Optional: run Harris just for visualization inside ROI
+    ptsVis = [];
+    try
+        ptsVis = detectHarrisFeatures(E,'MinQuality',0.01,'FilterSize',3);
+        ptsVis = ptsVis.selectStrongest(min(80, ptsVis.Count));
+        ptsVis = ptsVis.Location + roi(1:2);
+    catch
+    end
+
+    % === STEP 3. Visualize results ===
+    showResult(gray, roi, corners, ptsVis);
+end
+
+% -------- helper functions (kept in the same file) --------
+function Lout = takeLongest(L, n)
+    if isempty(L), Lout = L; return; end
+    [~,ord] = sort(arrayfun(@(l) norm(l.point1-l.point2), L),'descend');
+    Lout = L(ord(1:min(n,numel(ord))));
+end
+
+function p = lineIntersect(lA,lB)
+    [a1,b1,c1] = lineABC(lA.point1,lA.point2);
+    [a2,b2,c2] = lineABC(lB.point1,lB.point2);
+    d = a1*b2 - a2*b1;
+    if abs(d) < 1e-9
+        p = [NaN NaN];
+    else
+        x = (c1*b2 - c2*b1)/d;
+        y = (a1*c2 - a2*c1)/d;
+        p = [x y];
+    end
+end
+
+function [a,b,c] = lineABC(p1,p2)
+    x1=p1(1); y1=p1(2); x2=p2(1); y2=p2(2);
+    a = y2 - y1; b = x1 - x2; c = a*x1 + b*y1;
+end
+
+function C = orderCornersCW(C)
+    cmean = mean(C,1);
+    ang   = atan2(C(:,2)-cmean(2), C(:,1)-cmean(1));
+    [~,k] = sort(ang);
+    C = C(k,:);
+end
+
+function showResult(gray, roi, corners, pts)
+    figure; imshow(gray); hold on;
+    rectangle('Position',roi,'EdgeColor','y','LineWidth',2);
+    if ~isempty(pts)
+        plot(pts(:,1), pts(:,2), 'g.', 'MarkerSize', 10);
+    end
+    if ~isempty(corners) && all(isfinite(corners(:)))
+        plot(corners([1:4 1],1), corners([1:4 1],2), 'c-', 'LineWidth', 2);
+        plot(corners(:,1), corners(:,2), 'r+', 'MarkerSize', 10, 'LineWidth', 2);
+        text(corners(:,1)+4, corners(:,2)-4, compose('(%d)',1:size(corners,1))', ...
+             'Color','r','FontSize',9,'FontWeight','bold');
+        title('Auto-ROI with outer tag corners');
+    else
+        title('Auto-ROI (no reliable corner set yet)');
+    end
+end
