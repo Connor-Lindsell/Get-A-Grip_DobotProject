@@ -47,7 +47,7 @@ def main():
     bot = DobotROSClient(host="10.42.0.1", port=9090)
     bot.connect()
 
-    print("[calib] Ensure driver is OPERATING(4). If not, home the robot per your lab guide.")
+    print("[calib] Ensure driver is OPERATING(4).")
     if not bot.ensure_operating(8.0):
         print("[calib] Warning: safety != OPERATING(4). Proceeding anyway (pose may not update).")
 
