@@ -14,21 +14,35 @@ function PickPlaceDemo()
     % Initialize ROS node
     rosinit ('10.42.0.1'); % IP address of ROS master
 
-    ho = 0.1; % height offset for hover position
+    %% Properties
+
+    % Hardcode Pose
+    block1pos = [0.2; -0.1; 0.05];
+    block2pos = [0.2; 0.0; 0.05];
+    block3pos = [0.2; 0.1; 0.05];
+
+    % Camera Pose
+    % block1pos = getBlockPose3D;
+    % block2pos = getBlockPose3D;
+    % block3pos = getBlockPose3D;
+
+    ho = 0.05; % height offset for hover position
 
     %% Properties of blocks
     block1 = struct('colour', 'red', ...
-                    'blockPosition', [0.2; -0.1; 0.05], ...
-                    'hoverPosition', [0.2; -0.1; ho], ...
+                    'blockPosition', block1pos, ...
+                    'hoverPosition', [block1pos(1); block1pos(2); block1pos(3) + ho], ...
                     'blockOrientation', [0; 0; 0]);
+
     block2 = struct('colour', 'green', ...
-                    'blockPosition', [0.2; 0.0; 0.05], ...
-                    'hoverPosition', [0.2; 0.0; ho], ...
+                    'blockPosition', block2pos, ...
+                    'hoverPosition', [block2pos(1); block2pos(2); block2pos(3) + ho], ...
                     'blockOrientation', [0; 0; 0]);
+
     block3 = struct('colour', 'blue', ...
-                    'blockPosition', [0.2; 0.1; 0.05], ...
-                    'hoverPosition', [0.2; 0.1; ho], ...
-                    'blockOrientation', [0; 0; 0]);                  
+                    'blockPosition', block3pos, ...
+                    'hoverPosition', [block3pos(1); block3pos(2); block3pos(3) + ho], ...
+                    'blockOrientation', [0; 0; 0]);                
 
     %% Homing
     disp('=======================================');
@@ -65,11 +79,16 @@ function PickPlaceDemo()
     disp('---------------------------------------');
 
     move2goal(block1.hoverPosition, block1.blockOrientation); % Move above block
+
     grabObject(); % Close gripper
+
     [goalPosition, goalOrientation] = goalForColours(block1.colour);
     move2goal(goalPosition, goalOrientation); % Move to place position
+
     releaseObject(goalPosition); % Open gripper
+
     move2goal([0.1; 0; 0.2], [0; 0; 0]); % Move to safe position
+    
     disp('Block 1 placed successfully.');
     disp('=======================================');
 
@@ -86,10 +105,14 @@ function PickPlaceDemo()
     disp('---------------------------------------');
 
     move2goal(block2.hoverPosition, block2.blockOrientation); % Move above block
+
     grabObject(); % Close gripper
+
     [goalPosition, goalOrientation] = goalForColours(block2.colour);
     move2goal(goalPosition, goalOrientation); % Move to place position
+
     releaseObject(goalPosition); % Open gripper
+
     move2goal([0.1; 0; 0.2], [0; 0; 0]); % Move to safe position
 
     disp('Block 2 placed successfully.');
@@ -108,10 +131,14 @@ function PickPlaceDemo()
     disp('---------------------------------------');
 
     move2goal(block3.hoverPosition, block3.blockOrientation); % Move above block
+
     grabObject(); % Close gripper
+
     [goalPosition, goalOrientation] = goalForColours(block3.colour);
     move2goal(goalPosition, goalOrientation); % Move to place position
+
     releaseObject(goalPosition); % Open gripper
+    
     move2goal([0.1; 0; 0.2], [0; 0; 0]); % Move to safe position
 
     disp('Block 3 placed successfully.');
