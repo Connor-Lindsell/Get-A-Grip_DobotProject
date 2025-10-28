@@ -52,16 +52,16 @@ function PickPlaceDemo()
     disp("Homing\n");
     [safetyStatePublisher, safetyStateMsg ] = rospublisher ('/dobot_magician/target_safety_status');
     safetyStateMsg.Data = 2; % INITIALISING
-    send ( safetyStatePublisher , safetyStateMsg );
+    send (safetyStatePublisher, safetyStateMsg);
 
     pause(5); % wait for homing to complete
     disp('Homing complete.');
 
     disp("Openning gripper\n");
-    [ toolStatePub , toolStateMsg ] = rospublisher ('/dobot_magician/target_tool_state');
+    [toolStatePub, toolStateMsg] = rospublisher ('/dobot_magician/target_tool_state');
 
     % Deactivate pump and open gripper
-    toolStateMsg . Data = [0, 0]; 
+    toolStateMsg.Data = [0, 0]; 
     send ( toolStatePub , toolStateMsg );
 
     pause(2); % wait for gripper to open
