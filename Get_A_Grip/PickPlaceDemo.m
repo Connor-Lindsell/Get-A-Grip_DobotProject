@@ -25,9 +25,11 @@ function PickPlaceDemo()
     block3pos = [0.2; 0.1; 0.05];
 
     % Camera Pose
-    % block1pos = getBlockPose3D;
-    % block2pos = getBlockPose3D;
-    % block3pos = getBlockPose3D;
+    % camParam = getCameraCalibration;
+
+    % block1pos = getBlocksPose3D;
+    % block2pos = getBlocksPose3D;
+    % block3pos = getBlocksPose3D;
 
     ho = 0.05; % height offset for hover position
 

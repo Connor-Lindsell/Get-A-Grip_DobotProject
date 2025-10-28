@@ -1,15 +1,15 @@
 function camParam = getCameraCalibration()
 %GETCAMERACALIBRATION  Return intrinsics/distortion from Bouguet-style results.
 % Returns:
-%   calib.intr      : cameraIntrinsics object
-%   calib.K         : 3x3 intrinsic matrix (Computer Vision Toolbox convention)
-%   calib.kc        : [k1 k2 p1 p2 k3] Bouguet order
-%   calib.radial    : [k1 k2 k3]
-%   calib.tangential: [p1 p2]
-%   calib.imageSize : [ny nx]
-%   calib.focal     : [fx fy]
-%   calib.principal : [cx cy]
-%   calib.skew      : alpha_c
+%   camParam.intr      : cameraIntrinsics object
+%   camParam.K         : 3x3 intrinsic matrix (Computer Vision Toolbox convention)
+%   camParam.kc        : [k1 k2 p1 p2 k3] Bouguet order
+%   camParam.radial    : [k1 k2 k3]
+%   camParam.tangential: [p1 p2]
+%   camParam.imageSize : [ny nx]
+%   camParam.focal     : [fx fy]
+%   camParam.principal : [cx cy]
+%   camParam.skew      : alpha_c
 
     % ==== Paste from Matlab Camera Calibration toolbox results ====
     fx = 692.609244167284487;
