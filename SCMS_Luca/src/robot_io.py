@@ -1,3 +1,5 @@
+"""ROS bridge helper talking to the Dobot course driver over roslibpy."""
+
 import time
 import roslibpy
 
