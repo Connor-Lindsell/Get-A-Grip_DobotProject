@@ -19,18 +19,23 @@
 
 function [blockPosition, blockOrientation, blockColour] = IdentifyBlock(rosbagFile, cameraParams)
 
-    % idk if bag or image is better? it might be image to be honest but idk rosbag from ros seems like its supposed ot happen :major bag alert 
-    bag = rosbag(rosbagFile);
+    % % idk if bag or image is better? it might be image to be honest but idk rosbag from ros seems like its supposed ot happen :major bag alert 
+    % bag = rosbag(rosbagFile);
 
-    % read first depth image message
-    depth_img = select(bag,'Topic', '/camera/depth/image_rect_raw');
-    depth_img = readMessages(depth_img, 1);
-    depth_img = readImage(depth_img{1});
+    % % read first depth image message
+    % depth_img = select(bag,'Topic', '/camera/depth/image_rect_raw');
+    % depth_img = readMessages(depth_img, 1);
+    % depth_img = readImage(depth_img{1});
 
-    % read first rgb image message
-    rgb_img = select(bag,'Topic', '/camera/color/image_raw/compressed');
-    rgb_img = readMessages(rgb_img, 5);    
-    rgb_img = readImage(rgb_img{1});
+    % % read first rgb image message
+    % rgb_img = select(bag,'Topic', '/camera/color/image_raw/compressed');
+    % rgb_img = readMessages(rgb_img, 5);    
+    % rgb_img = readImage(rgb_img{1});
+
+    %  Grab one color frame (no rosbag needed)
+    rgbSub = rossubscriber('/camera/color/image_raw','sensor_msgs/Image');
+    rgbMsg = receive(rgbSub, 3);
+    Irgb   = rosReadImage(rgbMsg);  % use readImage(rgbMsg) if older MATLAB
 
     greyscale_img = rgb2gray(rgb_img);
 
