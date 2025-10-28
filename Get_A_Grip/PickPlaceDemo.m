@@ -14,6 +14,9 @@ function PickPlaceDemo()
     % Initialize ROS node
     rosinit ('10.42.0.1'); % IP address of ROS master
 
+    import motion.*
+    import perception.*
+
     %% Properties
 
     % Hardcode Pose
@@ -138,7 +141,7 @@ function PickPlaceDemo()
     move2goal(goalPosition, goalOrientation); % Move to place position
 
     releaseObject(goalPosition); % Open gripper
-    
+
     move2goal([0.1; 0; 0.2], [0; 0; 0]); % Move to safe position
 
     disp('Block 3 placed successfully.');
