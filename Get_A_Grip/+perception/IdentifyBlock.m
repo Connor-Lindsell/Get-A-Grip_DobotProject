@@ -6,7 +6,6 @@
 %  block relative to the base of the robot.
 % 
 %  Inputs:
-%    rosbagFile - The path to the ROS bag file containing the image data.
 %    cameraParams - A structure containing the camera's intrinsic and extrinsic parameters.
 %
 %  Outputs:
@@ -17,38 +16,38 @@
 %    blockColour - A string indicating the color of the identified block.
 % =========================================================================
 
-function [blockPosition, blockOrientation, blockColour] = IdentifyBlock(rosbagFile, cameraParams)
+function [blockPosition, blockOrientation, blockColour] = IdentifyBlock(cameraParams)
 
-    % % idk if bag or image is better? it might be image to be honest but idk rosbag from ros seems like its supposed ot happen :major bag alert 
-    % bag = rosbag(rosbagFile);
 
-    % % read first depth image message
-    % depth_img = select(bag,'Topic', '/camera/depth/image_rect_raw');
-    % depth_img = readMessages(depth_img, 1);
-    % depth_img = readImage(depth_img{1});
+    disp('=======================================');
+    disp('Identifying block in the scene...');
 
-    % % read first rgb image message
-    % rgb_img = select(bag,'Topic', '/camera/color/image_raw/compressed');
-    % rgb_img = readMessages(rgb_img, 5);    
-    % rgb_img = readImage(rgb_img{1});
+    I = imread('frame0000.jpg'); % For testing without ROS
 
-    %  Grab one color frame (no rosbag needed)
-    rgbSub = rossubscriber('/camera/color/image_raw','sensor_msgs/Image');
-    rgbMsg = receive(rgbSub, 3);
-    Irgb   = rosReadImage(rgbMsg);  % use readImage(rgbMsg) if older MATLAB
+    % Subscribe to RGB and Depth image topics
+    % depthSub = rossubscriber('/camera/depth/image_raw','sensor_msgs/Image');
+    % depthMsg = receive(depthSub, 3);
+    % depth_img = rosReadImage(depthMsg);  
 
-    greyscale_img = rgb2gray(rgb_img);
+    % %  Grab one color frame (no rosbag needed)
+    % rgbSub = rossubscriber('/camera/color/image_raw','sensor_msgs/Image');
+    % rgbMsg = receive(rgbSub, 3);
+    % Irgb   = rosReadImage(rgbMsg);  
 
-    pts = detectSIFTFeatures(greyscale_img, 'MetricThreshold', 500);
-    [features, pts] = extractFeatures(greyscale_img, pts);
+    % greyscale_img = rgb2gray(rgb_img);
 
-    % inliers after RANSAC
-    [~, inlierIdx] = helperRANSAC(pts.Location, features);
-    inlierPts = pts(inlierIdx, :);
-    if isempty(inlierPts)
-        error('No block identified in the scene');
-    end
+    % For testing without ros
+    greyscale_img = rgb2gray(I);
 
+    % detect corner features in the image
+    points = detectHarrisFeatures(greyscale_img);
+    [features, valid_points] = extractFeatures(greyscale_img, points);
+
+    % Valible points features on figure 
+    figure; imshow(greyscale_img); hold on;
+    plot(valid_points.selectStrongest(50),'showOrientation',true);
+
+    
     % Get centroid of inlier points
     centroid = mean(inlierPts.Location, 1);
     % Get block color
