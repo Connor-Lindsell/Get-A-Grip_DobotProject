@@ -1,4 +1,6 @@
-%
+% =================================================================
+% identifyBlocks.m
+% -----------------------------------------------------------------
 %   Captures one frame from RealSense camera via ROS, allows user to click,
 %   and returns the 3D point in camera coordinates.
 %
@@ -6,6 +8,7 @@
 %     xyzCamFrame : [x; y; z] point in meters (camera frame)
 %     rgbImage    : Undistorted RGB image shown to user
 %     depthImage  : Raw depth image in meters
+% =================================================================
 
 
 function [xyzCamFrame, rgbImage, depthImage] = identifyBlocks()
