@@ -13,17 +13,18 @@
 
 function [xyzCamFrame, rgbImage, depthImage] = identifyBlocks()
 
+    import perception.*
 
     % === Load camera intrinsics ===
-    camParam = getCameraCalibration();  % your predefined function
+    camParam = getCameraCalibration();  
     K = camParam.K;                     % Intrinsic matrix
     fx = K(1,1); fy = K(2,2);
     cx = K(1,3); cy = K(2,3);
 
-    % === Connect to ROS if not already connected ===
-    if ~robotics.ros.internal.Global.isNodeActive
-        rosinit;
-    end
+    % % === Connect to ROS if not already connected ===
+    % if ~robotics.ros.internal.Global.isNodeActive
+    %     rosinit;
+    % end
 
     % === Subscribe to color and depth topics ===
     colorSub = rossubscriber('/camera/color/image_raw', 'sensor_msgs/Image');
