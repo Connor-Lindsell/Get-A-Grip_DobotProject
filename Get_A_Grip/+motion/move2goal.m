@@ -11,7 +11,10 @@
 % =========================================================================
 
 function move2goal(goalPosition, goalOrientation)
-
+arguments
+    goalPosition (:,:) double 
+    goalOrientation (:,:) double
+end
     disp('=======================================');
     disp('Moving to goal position:');
     disp(goalPosition);

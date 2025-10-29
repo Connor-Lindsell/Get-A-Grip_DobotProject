@@ -67,16 +67,16 @@ msg = endEffectorPoseSubscriber.LatestMessage ;
 % Position (m)
 currentEndEffectorPosition = [msg.Pose.Position .X, ...
                               msg.Pose.Position .Y, ...
-                              msg.Pose.Position .Z];
+                              msg.Pose.Position .Z]
 
 % Orientation as quaternion [w x y z]
 currentEndEffectorQuat = [msg.Pose.Orientation .W, ...
                           msg.Pose.Orientation .X, ...
                           msg.Pose.Orientation .Y, ...
-                          msg.Pose.Orientation .Z];
+                          msg.Pose.Orientation .Z]
 
 % Euler angles [ roll pitch yaw] ( rad)
-[roll, pitch, yaw] = quat2eul(currentEndEffectorQuat);
+%[roll, pitch, yaw] = quat2eul(currentEndEffectorQuat);
 
 %% Set a target joint state
 jointTarget = [0, 0.4 , 0.3 , 0]; % Dobot has 4 joints by default
