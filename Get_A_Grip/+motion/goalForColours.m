@@ -7,10 +7,10 @@
 function [goalPosition, goalOrientation] = goalForColours(blockColour)
 
     switch blockColour
-        case 'red'
+        case 'green'
             goalPosition = [0.1128; -0.1187; -0.0521];
             goalOrientation = [0 0 0];
-        case 'green'
+        case 'red'
             goalPosition = [0.1539; -0.1265; -0.0519];
             goalOrientation = [0 0 0];
         case 'blue'
