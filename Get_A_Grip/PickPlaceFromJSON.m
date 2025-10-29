@@ -81,18 +81,21 @@ function PickPlaceFromJSON(detectionsJson, handeyeJson)
 
     % -------------------- ROS: home & wait for OPERATING(4) --------------------
     rosinit('10.42.0.1');
+    import motion.*
+    import perception.*
     cleanupObj = onCleanup(@() safe_ros_shutdown());
 
-    [pubSafety, msgSafety] = rospublisher('/dobot_magician/target_safety_status','std_msgs/Int32');
-    subState = rossubscriber('/dobot_magician/safety_status');
+    [safetyStatePublisher, safetyStateMsg ] = rospublisher ('/dobot_magician/target_safety_status');
+    safetyStateMsg.Data = 2; % INITIALISING
+    send ( safetyStatePublisher , safetyStateMsg );
 
-    msgSafety.Data = 2;  % INITIALISING
-    send(pubSafety, msgSafety);
+    msgSafety = rossubscriber('/dobot_magician/safety_status');
+
     fprintf('[PickPlace] Waiting for OPERATING (4)...\n');
     t0 = tic;
     while toc(t0) < 15
         pause(0.2);
-        m = subState.LatestMessage;
+        m = msgSafety.LatestMessage;
         if ~isempty(m) && m.Data == 4
             fprintf('[PickPlace] OPERATING.\n');
             break
