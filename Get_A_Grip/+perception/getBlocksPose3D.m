@@ -21,7 +21,9 @@
 %   camParam.principal : [cx cy]
 %   camParam.skew      : alpha_c
 % 
-% from other files, i need outputs that include the transform to robot from camera, the size of the block (height), and the blocks struct from identify blocks
+% from other files, i need outputs that include the transform to robot from camera (this needs to be a matrix of size 4x4)
+% the size of the block (edge length in metres),
+% and the blocks struct from identify blocks (matrix of size 4x2 for each block)
 % =========================================================
 
 function blocksPose = getBlocksPose3D(T_robot_from_cam, blockSize, blocks)
