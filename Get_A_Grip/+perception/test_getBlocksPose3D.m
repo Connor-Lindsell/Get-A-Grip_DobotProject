@@ -1,4 +1,4 @@
-import perception. 
+import perception.*
 
 % 1) Known camera intrinsics (use your getCameraCalibration)
 camParam = getCameraCalibration(); 

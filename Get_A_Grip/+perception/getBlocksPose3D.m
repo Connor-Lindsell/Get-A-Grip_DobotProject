@@ -48,13 +48,12 @@ function blocksPose = getBlocksPose3D(T_robot_from_cam, blockSize, blocks)
         blocksPose = struct([]); return;
     end
 
-    % creates 3D model of block in its own frame (Z=0)
     h = blockSize/2;
-    modelXY = [ -h, -h;
-                 h, -h;
-                 h,  h;
-                -h,  h ]';
-    model3D = [modelXY; zeroes(4,1)];
+    modelXY = [ -h, -h;   % TL
+                 h, -h;   % TR
+                 h,  h;   % BR
+                -h,  h ]; % BL
+    model3D = [modelXY, zeros(4,1)];
 
     % for each block, solve perspective and point to get its pose
     n = numel(blocks);
