@@ -20,16 +20,14 @@ function PickPlaceDemo()
     %% Properties
 
     % Hardcode Pose
-    block1pos = [0.2; -0.1; 0.05];
-    block2pos = [0.2; 0.0; 0.05];
-    block3pos = [0.2; 0.1; 0.05];
+    block1pos = [0.2169; 0.0596; -0.0664];
+    block2pos = [0.1965; 0.0077; -0.0664];
+    block3pos = [0.2568; -0.0378; -0.0664];
 
     % Camera Pose
-    % camParam = getCameraCalibration;
-
-    % block1pos = getBlocksPose3D;
-    % block2pos = getBlocksPose3D;
-    % block3pos = getBlocksPose3D;
+    % block1pos = getBlockPose3D;
+    % block2pos = getBlockPose3D;
+    % block3pos = getBlockPose3D;
 
     ho = 0.05; % height offset for hover position
 
@@ -37,37 +35,36 @@ function PickPlaceDemo()
     block1 = struct('colour', 'red', ...
                     'blockPosition', block1pos, ...
                     'hoverPosition', [block1pos(1); block1pos(2); block1pos(3) + ho], ...
-                    'blockOrientation', [0; 0; 0]);
+                    'blockOrientation', [0 0 0]);
 
     block2 = struct('colour', 'green', ...
                     'blockPosition', block2pos, ...
                     'hoverPosition', [block2pos(1); block2pos(2); block2pos(3) + ho], ...
-                    'blockOrientation', [0; 0; 0]);
+                    'blockOrientation', [0 0 0]);
 
     block3 = struct('colour', 'blue', ...
                     'blockPosition', block3pos, ...
                     'hoverPosition', [block3pos(1); block3pos(2); block3pos(3) + ho], ...
-                    'blockOrientation', [0; 0; 0]);                
+                    'blockOrientation', [0, 0, 0]);                
 
     %% Homing
     disp('=======================================');
     disp("Homing\n");
     [safetyStatePublisher, safetyStateMsg ] = rospublisher ('/dobot_magician/target_safety_status');
     safetyStateMsg.Data = 2; % INITIALISING
-    send (safetyStatePublisher, safetyStateMsg);
+    send ( safetyStatePublisher , safetyStateMsg );
 
-    pause(5); % wait for homing to complete
+    % Wait for homing to complete
+    pauseSub = rossubscriber('/dobot_magician/safety_status');
+    fprintf('Waiting for OPERATING (4)...\n');
+    while true
+        pause(0.2);
+        msg = pauseSub.LatestMessage;
+        if ~isempty(msg) && msg.Data == 4
+            fprintf('OPERATING.\n'); break
+        end
+    end
     disp('Homing complete.');
-
-    disp("Openning gripper\n");
-    [toolStatePub, toolStateMsg] = rospublisher ('/dobot_magician/target_tool_state');
-
-    % Deactivate pump and open gripper
-    toolStateMsg.Data = [0, 0]; 
-    send ( toolStatePub , toolStateMsg );
-
-    pause(2); % wait for gripper to open
-    disp('Gripper opened.');
     disp('READY TO PICK AND PLACE');
     disp('=======================================');
 
@@ -82,18 +79,17 @@ function PickPlaceDemo()
     disp('orientation (roll, pitch, yaw): ');
     disp(block1.blockOrientation);
     disp('---------------------------------------');
-
+    
     move2goal(block1.hoverPosition, block1.blockOrientation); % Move above block
 
-    grabObject(); % Close gripper
-
+    grabObject(block1.blockPosition, block1.blockOrientation); % Close gripper
+   
     [goalPosition, goalOrientation] = goalForColours(block1.colour);
     move2goal(goalPosition, goalOrientation); % Move to place position
 
     releaseObject(goalPosition); % Open gripper
 
-    move2goal([0.1; 0; 0.2], [0; 0; 0]); % Move to safe position
-    
+    move2goal([0.1; -0.1; 0.1], [0 0 0]); % Move to safe position
     disp('Block 1 placed successfully.');
     disp('=======================================');
 
@@ -111,14 +107,14 @@ function PickPlaceDemo()
 
     move2goal(block2.hoverPosition, block2.blockOrientation); % Move above block
 
-    grabObject(); % Close gripper
-
+    grabObject(block2.blockPosition, block2.blockOrientation); % Close gripper
+   
     [goalPosition, goalOrientation] = goalForColours(block2.colour);
     move2goal(goalPosition, goalOrientation); % Move to place position
 
     releaseObject(goalPosition); % Open gripper
 
-    move2goal([0.1; 0; 0.2], [0; 0; 0]); % Move to safe position
+    move2goal([0.1; -0.1; 0.1], [0 0 0]); % Move to safe position
 
     disp('Block 2 placed successfully.');
     disp('=======================================');
@@ -137,14 +133,14 @@ function PickPlaceDemo()
 
     move2goal(block3.hoverPosition, block3.blockOrientation); % Move above block
 
-    grabObject(); % Close gripper
-
+    grabObject(block3.blockPosition, block3.blockOrientation); % Close gripper
+   
     [goalPosition, goalOrientation] = goalForColours(block3.colour);
     move2goal(goalPosition, goalOrientation); % Move to place position
 
     releaseObject(goalPosition); % Open gripper
 
-    move2goal([0.1; 0; 0.2], [0; 0; 0]); % Move to safe position
+    move2goal([0.1; -0.1; 0.1], [0 0 0]); % Move to safe position
 
     disp('Block 3 placed successfully.');
     disp('=======================================');

@@ -28,7 +28,7 @@ function [xyzCamFrame, rgbImage, depthImage] = identifyBlocks()
 
     % === Subscribe to color and depth topics ===
     colorSub = rossubscriber('/camera/color/image_raw', 'sensor_msgs/Image');
-    depthSub = rossubscriber('/camera/depth/image_raw', 'sensor_msgs/Image');
+    depthSub = rossubscriber('/camera/depth/image_rect_raw', 'sensor_msgs/Image');
 
     disp('[INFO] Waiting for color and depth images...');
     colorMsg = receive(colorSub, 5);  % 5 second timeout
