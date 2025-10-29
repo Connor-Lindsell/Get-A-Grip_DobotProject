@@ -82,7 +82,7 @@ function blocksPose = getBlocksPose3D(T_robot_from_cam, blockSize, blocks)
         if isfield(blocks,'meta'), blocksPose(i).meta = blocks(i).meta; end
     end
 
-    fprintf('[getBlocksPose3D] %d block(s) solved via PnP.\n', n); % display info
+    fprintf('[getBlocksPose3D] %d block(s).\n', n); % display info
 end
 
 function T = rt2T(R, t) % build homogeneous transform from R,t
