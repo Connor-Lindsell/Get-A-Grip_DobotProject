@@ -107,4 +107,4 @@ function uv = worldToPixels(ws, Pw)
     if size(uv,1) == 1
         uv = uv(1,:);                       % ensure row vector
     end
-    ends
+end
