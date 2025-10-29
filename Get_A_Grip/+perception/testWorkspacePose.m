@@ -1,8 +1,8 @@
-import cali_img.*
+function testWorkspacePose
+    
 import perception.*
 import defineWorkspace.* 
 
-function test_workspace_pose
 clc; close all;
 
 % --- Settings ---
